@@ -1,26 +1,104 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* next/font 注入的 CSS 變數，需用 inline 才能在 runtime 解析 */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-bebas-neue);
+  --font-body: var(--font-dm-sans);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+@theme {
+  /* ── Colors: Green Yellow ── */
+  --color-gy-50:  #FDFFFA;
+  --color-gy-100: #EEFFD4;
+  --color-gy-200: #E0FFAE;
+  --color-gy-300: #D2FF88;
+  --color-gy-400: #C5FF62;
+  --color-gy-500: #B8FF3C;
+  --color-gy-600: #A3FC11;
+  --color-gy-700: #87DA05;
+  --color-gy-800: #68AB06;
+  --color-gy-900: #4B7E06;
+  --color-gy-950: #305105;
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* ── Colors: Electric Violet ── */
+  --color-ev-50:  #E9DBFF;
+  --color-ev-100: #D6BBFF;
+  --color-ev-200: #C29CFF;
+  --color-ev-300: #AF7CFF;
+  --color-ev-400: #9B5DFF;
+  --color-ev-500: #8639FD;
+  --color-ev-600: #7215FA;
+  --color-ev-700: #6207E3;
+  --color-ev-800: #5408BC;
+  --color-ev-900: #460895;
+  --color-ev-950: #360770;
+
+  /* ── Semantic: Brand ── */
+  --color-brand:        #B8FF3C;
+  --color-brand-hover:  #A3FC11;
+  --color-brand-active: #87DA05;
+
+  /* ── Semantic: Accent ── */
+  --color-accent:        #9B5DFF;
+  --color-accent-hover:  #8639FD;
+  --color-accent-active: #7215FA;
+
+  /* ── Semantic: Background ── */
+  --color-bg-base:    #F0F0F0;
+  --color-bg-surface: #FFFFFF;
+
+  /* ── Semantic: Content ── */
+  --color-content-primary:   #0A0A0A;
+  --color-content-secondary: #4A4A4A;
+  --color-content-disabled:  #858585;
+  --color-content-on-brand:  #0A0A0A;
+  --color-content-on-accent: #FFFFFF;
+
+  /* ── Semantic: Border ── */
+  --color-border:        #C2C2C2;
+  --color-border-strong: #858585;
+  --color-border-brand:  #B8FF3C;
+  --color-border-accent: #9B5DFF;
+
+  /* ── Semantic: Feedback ── */
+  --color-feedback-success: #A3FC11;
+  --color-feedback-error:   #FF3C6B;
+  --color-feedback-warning: #FFD600;
+
+  /* ── Font Sizes ── */
+  --text-display-hero: 89.76px;
+  --text-display-hero--line-height: 1.05;
+  --text-display-hero--letter-spacing: 0.02em;
+
+  --text-display-xl: 67.34px;
+  --text-display-xl--line-height: 1.05;
+  --text-display-xl--letter-spacing: 0.02em;
+
+  --text-heading-lg: 50.52px;
+  --text-heading-lg--line-height: 1.15;
+  --text-heading-lg--letter-spacing: 0.02em;
+
+  --text-heading-md: 37.9px;
+  --text-heading-md--line-height: 1.15;
+  --text-heading-md--letter-spacing: 0.02em;
+
+  --text-heading-sm: 28.43px;
+  --text-heading-sm--line-height: 1.15;
+  --text-heading-sm--letter-spacing: 0.02em;
+
+  --text-label-lg: 21.33px;
+  --text-label-lg--line-height: 1.5;
+  --text-label-lg--letter-spacing: 0em;
+
+  --text-body-md: 16px;
+  --text-body-md--line-height: 1.5;
+  --text-body-md--letter-spacing: 0em;
+
+  --text-body-sm: 12px;
+  --text-body-sm--line-height: 1.5;
+  --text-body-sm--letter-spacing: 0em;
+
+  --text-caption: 9px;
+  --text-caption--line-height: 1.4;
+  --text-caption--letter-spacing: 0.04em;
 }
