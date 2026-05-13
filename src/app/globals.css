@@ -101,4 +101,18 @@
   --text-caption: 9px;
   --text-caption--line-height: 1.4;
   --text-caption--letter-spacing: 0.04em;
+
+  /* ── Animations ── */
+  --animate-float:     float 3.2s ease-in-out infinite;
+  --animate-float-alt: float-alt 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50%       { transform: translateY(-14px) rotate(8deg); }
+}
+
+@keyframes float-alt {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50%       { transform: translateY(-10px) rotate(-6deg); }
 }
