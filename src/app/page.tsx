@@ -77,17 +77,17 @@ export default function Home() {
       {/* 主內容 */}
       <div className="relative z-10 flex flex-col items-center gap-8 px-8 text-center">
         <h1 className="font-display text-display-hero text-content-primary leading-none tracking-widest">
-          Y2K SNAP
+          SNAP SNAP
         </h1>
         <p className="text-body-md text-content-secondary max-w-xs">
-          上傳照片，編輯排版，一秒 Y2K 風格
+          上傳照片，編輯排版
         </p>
         <Link
           href="/editor"
           className="mt-2 inline-flex h-14 items-center justify-center rounded-full bg-brand px-10 text-label-lg font-body font-semibold text-content-on-brand transition-colors hover:bg-brand-hover active:bg-brand-active focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           aria-label="開始使用 Y2K Snap"
         >
-          開始使用
+          START
         </Link>
       </div>
 
