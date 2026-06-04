@@ -51,7 +51,7 @@ export function UploadZone({ onUpload }: Props) {
           <span className="font-display text-heading-sm text-content-primary tracking-widest">
             上傳照片
           </span>
-          <span className="text-caption text-content-secondary tracking-wide">
+          <span className="text-sm text-content-secondary tracking-wide">
             拖曳或點擊選取
           </span>
         </div>

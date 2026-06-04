@@ -74,22 +74,20 @@ export function Editor() {
 
       {/* 主體：濾鏡面板 + 照片預覽 */}
       <div className="flex flex-1 overflow-hidden flex-col lg:flex-row">
-        {/* 濾鏡面板：桌機左側，手機排到下方（order-last） */}
-        {photoUrl && (
-          <aside
-            className="order-last lg:order-first w-full lg:w-56 xl:w-64 bg-bg-surface border-t border-border lg:border-t-0 lg:border-r overflow-y-auto shrink-0"
-            aria-label="編輯工具"
-          >
-            <div className="p-4 flex flex-col gap-4">
-              <FilterPanel
-                filters={Y2K_FILTERS}
-                activeId={activeFilter}
-                photoUrl={photoUrl}
-                onSelect={setActiveFilter}
-              />
-            </div>
-          </aside>
-        )}
+        {/* 濾鏡面板：桌機左側，手機排到下方（order-last）；永遠顯示，無照片時為空狀態 */}
+        <aside
+          className="order-last lg:order-first w-full lg:w-56 xl:w-64 bg-bg-surface border-t border-border lg:border-t-0 lg:border-r overflow-y-auto shrink-0"
+          aria-label="編輯工具"
+        >
+          <div className="p-4 flex flex-col gap-4">
+            <FilterPanel
+              filters={Y2K_FILTERS}
+              activeId={activeFilter}
+              photoUrl={photoUrl}
+              onSelect={setActiveFilter}
+            />
+          </div>
+        </aside>
 
         {/* 照片預覽區：桌機右側，手機排到上方（order-first） */}
         <div className="order-first lg:order-last flex flex-1 items-center justify-center p-6 bg-bg-base overflow-auto">
