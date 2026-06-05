@@ -5,6 +5,7 @@ import Link from "next/link";
 import { UploadZone } from "./upload-zone";
 import { FilterPanel } from "./filter-panel";
 import { Y2K_FILTERS } from "./types";
+import { fileToImageUrl, isSupportedImage } from "@/lib/image-file";
 
 export function Editor() {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
@@ -41,12 +42,17 @@ export function Editor() {
     }, "image/png");
   }, [photoUrl, activeFilterCss]);
 
-  // 點照片區塊觸發更換
-  const handleChangePhoto = useCallback((file: File) => {
-    if (!file.type.startsWith("image/")) return;
-    if (photoUrl) URL.revokeObjectURL(photoUrl);
-    setPhotoUrl(URL.createObjectURL(file));
-    setActiveFilter("original");
+  // 點照片區塊觸發更換（支援 HEIC，轉檔為非同步）
+  const handleChangePhoto = useCallback(async (file: File) => {
+    if (!isSupportedImage(file)) return;
+    try {
+      const url = await fileToImageUrl(file);
+      if (photoUrl) URL.revokeObjectURL(photoUrl);
+      setPhotoUrl(url);
+      setActiveFilter("original");
+    } catch {
+      // 轉檔失敗則保留原本照片，不中斷使用者
+    }
   }, [photoUrl]);
 
   return (
@@ -55,16 +61,16 @@ export function Editor() {
       <header className="flex items-center justify-between px-5 py-3 bg-bg-surface border-b border-border shrink-0">
         <Link
           href="/"
-          className="font-display text-heading-sm text-content-primary tracking-widest hover:text-accent transition-colors leading-none"
+          className="font-display text-heading-sm text-content-primary leading-none hover:text-accent transition-colors"
           aria-label="返回首頁"
         >
-          ← Y2K SNAP
+          ←
         </Link>
 
         {photoUrl && (
           <button
             onClick={handleDownload}
-            className="inline-flex h-10 items-center gap-2 rounded-full bg-brand px-6 font-body font-semibold text-label-lg text-content-on-brand transition-colors hover:bg-brand-hover active:bg-brand-active focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className="inline-flex h-10 items-center gap-2 rounded-full bg-brand px-6 font-body font-semibold text-base text-content-on-brand transition-colors hover:bg-brand-hover active:bg-brand-active focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             aria-label="下載套用濾鏡後的照片"
           >
             下載
@@ -97,7 +103,7 @@ export function Editor() {
               <input
                 ref={changeInputRef}
                 type="file"
-                accept="image/*"
+                accept="image/*,.heic,.heif"
                 className="sr-only"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
@@ -116,7 +122,7 @@ export function Editor() {
               />
             </>
           ) : (
-            <div className="w-full max-w-md">
+            <div className="w-1/2 max-w-2xl">
               <UploadZone onUpload={setPhotoUrl} />
             </div>
           )}

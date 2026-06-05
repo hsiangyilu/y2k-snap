@@ -47,10 +47,6 @@ export function FilterPanel({ filters, activeId, photoUrl, onSelect }: Props) {
               </div>
             ))}
           </div>
-          {/* 提示文字：最小 14px */}
-          <p className="text-sm text-content-disabled text-center tracking-wide pt-1">
-            上傳照片後預覽濾鏡
-          </p>
         </div>
       ) : (
         /* 有照片：正式濾鏡縮圖 */
