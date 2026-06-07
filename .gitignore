@@ -24,6 +24,7 @@
 .DS_Store
 *.pem
 *.png
+!public/frames/*.png
 
 # debug
 npm-debug.log*
