@@ -18,7 +18,7 @@ const EMPTY_COLOR: Record<string, string> = {
   retro:    "bg-gy-100",
   neon:     "bg-ev-100",
   glam:     "bg-ev-50",
-  dark:     "bg-[#C2C2C2]",
+  dark:     "bg-border",
 };
 
 export function FilterPanel({ filters, activeId, photoUrl, onSelect }: Props) {

@@ -73,7 +73,7 @@ export function UploadZone({ onUpload }: Props) {
           <>
             <StarBurst
               size={28}
-              className="text-brand animate-spin"
+              className="text-brand animate-spin motion-reduce:animate-none"
               strokeWidth={2}
             />
             <span className="font-display text-heading-sm text-content-primary tracking-widest">

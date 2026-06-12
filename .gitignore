@@ -25,6 +25,7 @@
 *.pem
 *.png
 !public/frames/*.png
+!public/stickers/*.png
 
 # debug
 npm-debug.log*

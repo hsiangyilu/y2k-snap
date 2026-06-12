@@ -21,6 +21,29 @@ export type Frame = {
   size: { width: number; height: number };
 };
 
+// 貼紙特效：每張 src 是「整面散佈好的貼紙圖層」（去背 PNG），
+// 以 cover 方式鋪滿照片區域；套用貼紙時照片轉為黑白底片色調
+export type Sticker = {
+  id: string;
+  label: string;
+  src: string | null; // null 代表「無貼紙」
+};
+
+// 貼紙模式下照片的黑白底片色調：低對比的灰平褪色復古感，讓彩色貼紙更突出
+export const STICKER_BW_CSS =
+  "grayscale(1) sepia(0.2) contrast(0.82) brightness(0.97)";
+
+export const Y2K_STICKERS: Sticker[] = [
+  { id: "none",      label: "NONE",    src: null },
+  { id: "sticker-1", label: "STARS",   src: "/stickers/sticker-1.png" },
+  { id: "sticker-2", label: "GEMS",    src: "/stickers/sticker-2.png" },
+  { id: "sticker-3", label: "FLOWER",  src: "/stickers/sticker-3.png" },
+  { id: "sticker-4", label: "HEARTS",  src: "/stickers/sticker-4.png" },
+  { id: "sticker-6", label: "CRYSTAL", src: "/stickers/sticker-6.png" },
+  { id: "sticker-7", label: "MOON",    src: "/stickers/sticker-7.png" },
+  { id: "sticker-8", label: "BLUEBERRY", src: "/stickers/sticker-8.png" },
+];
+
 // 濾鏡強度整體降低 20%：每個數值往無效果基準拉近 20%
 // （brightness/contrast/saturate 基準 1，grayscale/sepia/hue-rotate 基準 0）
 export const Y2K_FILTERS: Filter[] = [
@@ -29,8 +52,13 @@ export const Y2K_FILTERS: Filter[] = [
   { id: "vivid",    label: "VIVID",    css: "saturate(2.2) contrast(1.12) brightness(1.04)" },
   { id: "chrome",   label: "CHROME",   css: "grayscale(0.28) contrast(1.4) brightness(1.16)" },
   { id: "retro",    label: "RETRO",    css: "sepia(0.44) saturate(1.32) contrast(1.08)" },
-  { id: "neon",     label: "NEON",     css: "hue-rotate(176deg) saturate(1.96) brightness(1.08) contrast(1.08)" },
-  { id: "glam",     label: "GLAM",     css: "hue-rotate(256deg) saturate(1.8) brightness(1.08)" },
+  // NEON / GLAM 改為人像友善：移除大角度 hue-rotate（會把膚色轉成外星色），
+  // 改用微幅色調 + 飽和/亮度，保留 Y2K 電子感但臉不變色
+  { id: "neon",     label: "NEON",     css: "saturate(1.55) contrast(1.12) brightness(1.06) hue-rotate(-10deg)" },
+  { id: "glam",     label: "GLAM",     css: "brightness(1.12) saturate(1.18) contrast(0.96) sepia(0.18)" },
+  // HONEY / ANGEL：人像友善的新增款，無大角度 hue-rotate，膚色自然
+  { id: "honey",    label: "HONEY",    css: "sepia(0.28) saturate(1.2) brightness(1.08) contrast(1.02)" },
+  { id: "angel",    label: "ANGEL",    css: "brightness(1.15) contrast(0.9) saturate(1.1)" },
   { id: "dark",     label: "DARK",     css: "brightness(0.72) contrast(1.4) saturate(1.32)" },
 ];
 
