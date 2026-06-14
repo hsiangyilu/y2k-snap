@@ -4,6 +4,31 @@
 
 ---
 
+## 0. 每天的習慣（最重要，避免本機落後遠端）
+
+多台電腦輪流開發，最容易發生「這台還是舊版 + 一份沒推的改動」，導致跟遠端分岔。
+養成下面三個習慣就不會再發生：
+
+```bash
+# ① 開工前一定先 pull（第一件事）
+git pull
+
+# ② 收工 / 換電腦前一定先 push（別讓工作只躺在某一台）
+git add -A && git commit -m "wip: ..." && git push
+
+# ③ 想確認真實狀態（git status 單獨用會騙人，要先 fetch）
+git sync          # = git fetch && git status -sb
+```
+
+> ⚠️ `git status` 只跟「本機快取的 origin」比對，不會主動連遠端。
+> 沒先 `fetch` 的話，它顯示「up to date」可能是假的 —— 一律用 `git sync` 看真實狀態。
+
+已套用的 git 設定（全域）：
+- `alias.sync` → `git sync` 一鍵 fetch + 精簡狀態
+- `pull.ff only` → pull 遇到分岔會直接擋下提醒，不會默默產生亂的 merge commit
+
+---
+
 ## 1. 裝基礎工具（新電腦如果沒有）
 
 ```bash
