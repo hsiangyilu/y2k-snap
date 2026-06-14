@@ -33,32 +33,44 @@
   --color-ev-900: #460895;
   --color-ev-950: #360770;
 
-  /* ── Semantic: Brand ── */
-  --color-brand:        #B8FF3C;
-  --color-brand-hover:  #A3FC11;
-  --color-brand-active: #87DA05;
+  /* ── Primitive: Neutral ── */
+  --color-neutral-0:   #FFFFFF;
+  --color-neutral-50:  #F0F0F0;
+  --color-neutral-100: #E0E0E0;
+  --color-neutral-200: #C2C2C2;
+  --color-neutral-400: #858585;
+  --color-neutral-600: #4A4A4A;
+  --color-neutral-800: #1F1F1F;
+  --color-neutral-950: #0A0A0A;
+
+  /* ── Semantic: Brand ──
+     語意層一律引用 Primitive，改品牌色只需動 Primitive，此處自動跟著變 */
+  --color-brand:        var(--color-gy-500);
+  --color-brand-hover:  var(--color-gy-600);
+  --color-brand-active: var(--color-gy-700);
 
   /* ── Semantic: Accent ── */
-  --color-accent:        #9B5DFF;
-  --color-accent-hover:  #8639FD;
-  --color-accent-active: #7215FA;
+  --color-accent:        var(--color-ev-400);
+  --color-accent-hover:  var(--color-ev-500);
+  --color-accent-active: var(--color-ev-600);
 
   /* ── Semantic: Background ── */
-  --color-bg-base:    #F0F0F0;
-  --color-bg-surface: #FFFFFF;
+  --color-bg-base:    var(--color-neutral-50);
+  --color-bg-surface: var(--color-neutral-0);
+  --color-bg-overlay: rgba(10, 10, 10, 0.6);
 
   /* ── Semantic: Content ── */
-  --color-content-primary:   #0A0A0A;
-  --color-content-secondary: #4A4A4A;
-  --color-content-disabled:  #858585;
-  --color-content-on-brand:  #0A0A0A;
-  --color-content-on-accent: #FFFFFF;
+  --color-content-primary:   var(--color-neutral-950);
+  --color-content-secondary: var(--color-neutral-600);
+  --color-content-disabled:  var(--color-neutral-400);
+  --color-content-on-brand:  var(--color-neutral-950);
+  --color-content-on-accent: var(--color-neutral-0);
 
   /* ── Semantic: Border ── */
-  --color-border:        #C2C2C2;
-  --color-border-strong: #858585;
-  --color-border-brand:  #B8FF3C;
-  --color-border-accent: #9B5DFF;
+  --color-border:        var(--color-neutral-200);
+  --color-border-strong: var(--color-neutral-400);
+  --color-border-brand:  var(--color-gy-500);
+  --color-border-accent: var(--color-ev-400);
 
   /* ── Semantic: Feedback ── */
   --color-feedback-success: #A3FC11;
