@@ -64,7 +64,7 @@ npm run dev                                    # 確認跑得起來
 #     （AirDrop / 雲端 / scp 都行）
 ~/.gstack-brain-remote.txt
 
-# 3b. 在新電腦跑（clone brain repo、拉回所有 context-save 進度）
+# 3b. 在新電腦跑（clone brain repo、拉回所有進度）
 gstack-brain-restore
 ```
 
@@ -86,6 +86,7 @@ Brain repo：`https://github.com/hsiangyilu/gstack-brain.git`（私人）
 
 > gbrain 本身是每台機器各自的本機庫，所以新機要重跑一次 `/setup-gbrain`。
 > 記憶內容已透過步驟 3 的 git 同步過去。
+> 同步到 remote 用 `/sync-gbrain`。
 
 ---
 
