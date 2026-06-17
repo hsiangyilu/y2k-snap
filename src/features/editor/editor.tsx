@@ -55,16 +55,32 @@ function drawCover(
   );
 }
 
-function exportCanvas(canvas: HTMLCanvasElement) {
-  canvas.toBlob((blob) => {
-    if (!blob) return;
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "y2k-snap.png";
-    a.click();
-    URL.revokeObjectURL(url);
-  }, "image/png");
+async function exportCanvas(canvas: HTMLCanvasElement) {
+  const blob = await new Promise<Blob | null>((resolve) =>
+    canvas.toBlob(resolve, "image/png")
+  );
+  if (!blob) return;
+
+  const file = new File([blob], "y2k-snap.png", { type: "image/png" });
+
+  // 手機優先用 Web Share API，讓使用者可直接存到相簿
+  if (navigator.canShare?.({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: "y2k-snap" });
+    } catch (err) {
+      // AbortError 表示使用者主動取消，不算錯誤
+      if ((err as Error).name !== "AbortError") throw err;
+    }
+    return;
+  }
+
+  // 桌面瀏覽器 fallback：觸發檔案下載
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "y2k-snap.png";
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 export function Editor() {
@@ -125,7 +141,7 @@ export function Editor() {
         ctx.restore();
 
         ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
-        exportCanvas(canvas);
+        await exportCanvas(canvas);
         return;
       }
 
@@ -139,7 +155,7 @@ export function Editor() {
           x: 0, y: 0, width: canvas.width, height: canvas.height,
         });
       }
-      exportCanvas(canvas);
+      await exportCanvas(canvas);
     } catch {
       // 圖層載入失敗則不下載，避免輸出不完整的圖
     } finally {
