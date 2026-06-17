@@ -8,6 +8,7 @@ import { FramePanel } from "./frame-panel";
 import { StickerPanel } from "./sticker-panel";
 import { Y2K_FILTERS, Y2K_FRAMES, Y2K_STICKERS, STICKER_BW_CSS } from "./types";
 import { fileToImageUrl, isSupportedImage } from "@/lib/image-file";
+import { applyPixelFilters } from "@/lib/canvas-filter";
 
 type Tab = "frame" | "filter" | "sticker";
 
@@ -134,9 +135,14 @@ export function Editor() {
         ctx.beginPath();
         ctx.rect(rect.x, rect.y, rect.width, rect.height);
         ctx.clip();
-        if (effectiveFilterCss !== "none") ctx.filter = effectiveFilterCss;
         drawCover(ctx, img, rect);
-        ctx.filter = "none";
+        ctx.restore();
+        // 濾鏡以像素操作套用，相容 iOS Safari < 18（ctx.filter 在舊版無效）
+        applyPixelFilters(ctx, rect.x, rect.y, rect.width, rect.height, effectiveFilterCss);
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(rect.x, rect.y, rect.width, rect.height);
+        ctx.clip();
         if (stickerImg) drawCover(ctx, stickerImg, rect);
         ctx.restore();
 
@@ -147,9 +153,8 @@ export function Editor() {
 
       canvas.width = img.naturalWidth;
       canvas.height = img.naturalHeight;
-      if (effectiveFilterCss !== "none") ctx.filter = effectiveFilterCss;
       ctx.drawImage(img, 0, 0);
-      ctx.filter = "none";
+      applyPixelFilters(ctx, 0, 0, canvas.width, canvas.height, effectiveFilterCss);
       if (stickerImg) {
         drawCover(ctx, stickerImg, {
           x: 0, y: 0, width: canvas.width, height: canvas.height,
