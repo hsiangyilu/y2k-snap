@@ -10,13 +10,10 @@ type Props = {
 
 export function FramePanel({ frames, activeId, onSelect }: Props) {
   return (
-    <section aria-label="相機邊框選擇">
-      {/* 標題 — 最小 14px */}
-      <p className="font-display text-sm text-content-secondary tracking-[0.15em] uppercase mb-3">
-        邊框
-      </p>
+    <section aria-label="Frame selection">
 
-      <div className="grid grid-cols-4 gap-2 lg:grid-cols-2">
+
+      <div className="grid grid-rows-2 grid-flow-col auto-cols-[calc((100vw-60px)/4.5)] gap-2 overflow-x-auto pb-1 lg:grid-rows-none lg:grid-cols-2 lg:grid-flow-row lg:auto-cols-auto lg:overflow-x-visible lg:pb-0">
         {frames.map((frame) => {
           const isActive = frame.id === activeId;
           return (
@@ -41,7 +38,7 @@ export function FramePanel({ frames, activeId, onSelect }: Props) {
                   />
                 ) : (
                   <span className="font-display text-xs text-content-disabled tracking-widest">
-                    無邊框
+                    NONE
                   </span>
                 )}
               </div>

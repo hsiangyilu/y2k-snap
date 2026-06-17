@@ -15,7 +15,7 @@ const bebasNeue = Bebas_Neue({
 
 export const metadata: Metadata = {
   title: "Y2K Snap",
-  description: "照片編輯排版工具",
+  description: "Upload, edit and style your photos with Y2K vibes",
 };
 
 export default function RootLayout({
@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="zh-TW"
+      lang="en"
       className={`${dmSans.variable} ${bebasNeue.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-bg-base text-content-primary font-body">

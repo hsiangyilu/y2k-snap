@@ -41,6 +41,24 @@ export function Heart({ size = 40, className = "", strokeWidth = 2.5, style }: P
   );
 }
 
+export function FiveStar({ size = 40, className = "", strokeWidth = 2.5, style }: Props) {
+  // 五角星：外圈半徑 18，內圈半徑 7.2，從正上方開始
+  const points = Array.from({ length: 5 }, (_, i) => {
+    const outer = ((i * 72 - 90) * Math.PI) / 180;
+    const inner = (((i * 72 + 36) - 90) * Math.PI) / 180;
+    const ox = 20 + 18 * Math.cos(outer);
+    const oy = 20 + 18 * Math.sin(outer);
+    const ix = 20 + 7.2 * Math.cos(inner);
+    const iy = 20 + 7.2 * Math.sin(inner);
+    return `${ox},${oy} ${ix},${iy}`;
+  }).join(" ");
+  return (
+    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" className={className} style={style} aria-hidden="true">
+      <polygon points={points} stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export function MiniCross({ size = 24, className = "", strokeWidth = 2, style }: Props) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} style={style} aria-hidden="true">

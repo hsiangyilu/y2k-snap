@@ -69,7 +69,7 @@ function exportCanvas(canvas: HTMLCanvasElement) {
 
 export function Editor() {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<Tab>("frame");
+  const [activeTab, setActiveTab] = useState<Tab>("filter");
   const [activeFilter, setActiveFilter] = useState("original");
   const [activeFrame, setActiveFrame] = useState("none");
   const [activeSticker, setActiveSticker] = useState("none");
@@ -181,7 +181,7 @@ export function Editor() {
     <img
       ref={imgRef}
       src={photoUrl ?? undefined}
-      alt="已上傳的照片預覽"
+      alt="Uploaded photo preview"
       className="w-full h-full object-cover block"
       style={{ filter: effectiveFilterCss }}
       onLoad={(e) =>
@@ -210,7 +210,7 @@ export function Editor() {
         <Link
           href="/"
           className="inline-flex min-w-11 min-h-11 items-center justify-center -ml-2 font-display text-heading-sm text-content-primary leading-none hover:text-accent transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent rounded-full"
-          aria-label="返回首頁"
+          aria-label="Back to home"
         >
           ←
         </Link>
@@ -220,10 +220,10 @@ export function Editor() {
             onClick={handleDownload}
             disabled={isDownloading}
             className="inline-flex h-10 items-center gap-2 rounded-full bg-brand px-6 font-body font-semibold text-base text-content-on-brand transition-colors hover:bg-brand-hover active:bg-brand-active focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60 disabled:cursor-wait"
-            aria-label="下載編輯完成的照片"
+            aria-label="Download edited photo"
             aria-busy={isDownloading}
           >
-            {isDownloading ? "處理中…" : "下載"}
+            {isDownloading ? "Downloading…" : "Download"}
           </button>
         )}
       </header>
@@ -233,29 +233,29 @@ export function Editor() {
         {/* 工具面板：桌機左側，手機排到下方（order-last）；永遠顯示，無照片時為空狀態 */}
         <aside
           className="order-last lg:order-first w-full lg:w-56 xl:w-64 max-h-[42vh] lg:max-h-none bg-bg-surface border-t border-border lg:border-t-0 lg:border-r overflow-y-auto shrink-0"
-          aria-label="編輯工具"
+          aria-label="Edit tools"
         >
           <div className="p-4 flex flex-col gap-4">
             {/* Tab 切換：邊框 / 濾鏡 */}
             <div
               role="tablist"
-              aria-label="編輯工具分頁"
-              className="grid grid-cols-3 gap-1 rounded-full bg-bg-base p-1"
+              aria-label="Edit tool tabs"
+              className="flex gap-6 border-b border-border"
             >
               {([
-                { id: "frame", label: "邊框" },
-                { id: "filter", label: "濾鏡" },
-                { id: "sticker", label: "貼紙" },
+                { id: "filter", label: "Filter" },
+                { id: "frame", label: "Frame" },
+                { id: "sticker", label: "Sticker" },
               ] as const).map((tab) => (
                 <button
                   key={tab.id}
                   role="tab"
                   aria-selected={activeTab === tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`h-11 lg:h-9 rounded-full font-display text-sm tracking-[0.1em] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+                  className={`pb-3 font-display tracking-[0.1em] transition-colors border-b-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
                     activeTab === tab.id
-                      ? "bg-brand text-content-on-brand"
-                      : "text-content-secondary hover:text-content-primary"
+                      ? "text-sm text-content-primary border-b-brand"
+                      : "text-xs text-content-secondary border-b-transparent hover:text-content-primary"
                   }`}
                 >
                   {tab.label}
@@ -263,6 +263,7 @@ export function Editor() {
               ))}
             </div>
 
+            <div className="animate-tab-in" key={activeTab}>
             {activeTab === "frame" && (
               <FramePanel
                 frames={Y2K_FRAMES}
@@ -285,6 +286,7 @@ export function Editor() {
                 onSelect={setActiveSticker}
               />
             )}
+            </div>
           </div>
         </aside>
 
@@ -305,8 +307,8 @@ export function Editor() {
                     // 由容器高換算的寬(100cqh × 比例)，再以原始尺寸為上限避免放大模糊
                     width: `min(${frame.size.width}px, 100cqw, calc(100cqh * ${frame.size.width} / ${frame.size.height}))`,
                   }}
-                  title="點擊更換照片"
-                  aria-label="點擊更換照片，目前已套用相機邊框預覽"
+                  title="Tap to change photo"
+                  aria-label="Tap to change photo — frame preview active"
                 >
                   <div
                     className="absolute overflow-hidden"
@@ -341,8 +343,8 @@ export function Editor() {
                         }
                       : undefined
                   }
-                  title="點擊更換照片"
-                  aria-label="點擊更換照片"
+                  title="Tap to change photo"
+                  aria-label="Tap to change photo"
                 >
                   {framedPhotoImg}
                   {stickerOverlay}
@@ -350,7 +352,7 @@ export function Editor() {
               )}
             </>
           ) : (
-            <div className="w-1/2 max-w-2xl">
+            <div className="w-full max-w-sm">
               <UploadZone onUpload={setPhotoUrl} />
             </div>
           )}

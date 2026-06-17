@@ -10,13 +10,9 @@ type Props = {
 
 export function StickerPanel({ stickers, activeId, onSelect }: Props) {
   return (
-    <section aria-label="貼紙特效選擇">
-      {/* 標題 — 最小 14px */}
-      <p className="font-display text-sm text-content-secondary tracking-[0.15em] uppercase mb-3">
-        貼紙
-      </p>
+    <section aria-label="Sticker selection">
 
-      <div className="grid grid-cols-4 gap-2 lg:grid-cols-2">
+      <div className="grid grid-rows-2 grid-flow-col auto-cols-[calc((100vw-60px)/4.5)] gap-2 overflow-x-auto pb-1 lg:grid-rows-none lg:grid-cols-2 lg:grid-flow-row lg:auto-cols-auto lg:overflow-x-visible lg:pb-0">
         {stickers.map((sticker) => {
           const isActive = sticker.id === activeId;
           return (
@@ -41,7 +37,7 @@ export function StickerPanel({ stickers, activeId, onSelect }: Props) {
                   />
                 ) : (
                   <span className="font-display text-xs text-content-disabled tracking-widest">
-                    無貼紙
+                    NONE
                   </span>
                 )}
               </div>

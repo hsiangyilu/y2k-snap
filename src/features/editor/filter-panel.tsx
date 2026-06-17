@@ -23,34 +23,27 @@ const EMPTY_COLOR: Record<string, string> = {
 
 export function FilterPanel({ filters, activeId, photoUrl, onSelect }: Props) {
   return (
-    <section aria-label="濾鏡選擇">
-      {/* 標題 — 最小 14px */}
-      <p className="font-display text-sm text-content-secondary tracking-[0.15em] uppercase mb-3">
-        濾鏡
-      </p>
+    <section aria-label="Filter selection">
 
-      {/* 無照片：彩色佔位空狀態 */}
+
+      {/* 2 行固定高度，超過 8 個往右延伸可橫滑 */}
       {!photoUrl ? (
-        <div className="flex flex-col gap-3">
-          <div className="grid grid-cols-4 gap-2 lg:grid-cols-2">
-            {filters.map((filter) => (
-              <div
-                key={filter.id}
-                className="relative overflow-hidden rounded-lg border border-border"
-                aria-hidden="true"
-              >
-                <div className={`aspect-square ${EMPTY_COLOR[filter.id] ?? "bg-bg-base"}`} />
-                {/* 濾鏡名稱標籤：最小 14px */}
-                <div className="absolute bottom-0 inset-x-0 py-1 text-center font-display tracking-wider bg-black/10 text-content-secondary text-sm leading-none">
-                  {filter.label}
-                </div>
+        <div className="grid grid-rows-2 grid-flow-col auto-cols-[calc((100vw-60px)/4.5)] gap-2 overflow-x-auto pb-1 lg:grid-rows-none lg:grid-cols-2 lg:grid-flow-row lg:auto-cols-auto lg:overflow-x-visible lg:pb-0">
+          {filters.map((filter) => (
+            <div
+              key={filter.id}
+              className="relative overflow-hidden rounded-lg border border-border"
+              aria-hidden="true"
+            >
+              <div className={`aspect-square ${EMPTY_COLOR[filter.id] ?? "bg-bg-base"}`} />
+              <div className="absolute bottom-0 inset-x-0 py-1 text-center font-display tracking-wider bg-black/10 text-content-secondary text-sm leading-none">
+                {filter.label}
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       ) : (
-        /* 有照片：正式濾鏡縮圖 */
-        <div className="grid grid-cols-4 gap-2 lg:grid-cols-2">
+        <div className="grid grid-rows-2 grid-flow-col auto-cols-[calc((100vw-60px)/4.5)] gap-2 overflow-x-auto pb-1 lg:grid-rows-none lg:grid-cols-2 lg:grid-flow-row lg:auto-cols-auto lg:overflow-x-visible lg:pb-0">
           {filters.map((filter) => {
             const isActive = filter.id === activeId;
             return (
@@ -74,7 +67,6 @@ export function FilterPanel({ filters, activeId, photoUrl, onSelect }: Props) {
                     style={{ filter: filter.css }}
                   />
                 </div>
-                {/* 濾鏡名稱標籤：最小 14px */}
                 <div
                   className={`absolute bottom-0 inset-x-0 py-1 text-center font-display tracking-wider text-sm leading-none transition-colors ${
                     isActive

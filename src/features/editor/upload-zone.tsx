@@ -18,7 +18,7 @@ export function UploadZone({ onUpload }: Props) {
       setError(null);
 
       if (!isSupportedImage(file)) {
-        setError("不支援的檔案格式，請改用 JPG、PNG 或 HEIC");
+        setError("Unsupported format. Please use JPG, PNG, or HEIC.");
         return;
       }
 
@@ -27,7 +27,7 @@ export function UploadZone({ onUpload }: Props) {
         const url = await fileToImageUrl(file);
         onUpload(url);
       } catch {
-        setError("照片處理失敗，請換一張再試");
+        setError("Failed to process photo. Please try another.");
       } finally {
         setIsLoading(false);
       }
@@ -66,7 +66,7 @@ export function UploadZone({ onUpload }: Props) {
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
         disabled={isLoading}
-        aria-label="上傳照片，拖曳或點擊選取"
+        aria-label="Upload a photo — drag and drop or click to select"
         aria-busy={isLoading}
       >
         {isLoading ? (
@@ -77,7 +77,7 @@ export function UploadZone({ onUpload }: Props) {
               strokeWidth={2}
             />
             <span className="font-display text-heading-sm text-content-primary tracking-widest">
-              轉換中…
+              LOADING…
             </span>
           </>
         ) : (
@@ -89,7 +89,10 @@ export function UploadZone({ onUpload }: Props) {
             />
             <div className="flex flex-col items-center gap-1">
               <span className="font-display text-heading-sm text-content-primary tracking-widest">
-                上傳照片
+                UPLOAD
+              </span>
+              <span className="font-body text-xs text-content-disabled">
+                drag &amp; drop or tap to select
               </span>
             </div>
           </>
