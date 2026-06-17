@@ -123,6 +123,10 @@ export function Editor() {
         canvas.width = frameImg.naturalWidth;
         canvas.height = frameImg.naturalHeight;
 
+        // 白色底，避免分享到 Instagram 限時動態時透明區域顯示為黑色
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
         const rect = {
           x: (frame.screen.x / 100) * canvas.width,
           y: (frame.screen.y / 100) * canvas.height,
