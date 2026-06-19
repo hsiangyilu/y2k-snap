@@ -111,7 +111,7 @@ export function Editor() {
     if (!photoUrl || !img || img.naturalWidth === 0 || isDownloading) return;
 
     const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
     setIsDownloading(true);
@@ -165,8 +165,11 @@ export function Editor() {
         });
       }
       await exportCanvas(canvas);
-    } catch {
-      // 圖層載入失敗則不下載，避免輸出不完整的圖
+    } catch (err) {
+      // AbortError 是使用者主動取消分享，其餘才是真正的錯誤
+      if (err instanceof Error && err.name !== "AbortError") {
+        console.error("[y2k-snap] 匯出失敗", err);
+      }
     } finally {
       setIsDownloading(false);
     }
