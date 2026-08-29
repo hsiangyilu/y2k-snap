@@ -56,32 +56,54 @@ function drawCover(
   );
 }
 
+const EXPORT_FILENAME = "y2k-snap.png";
+
+// 只有觸控裝置（手機/平板）才走 Web Share 存相簿；
+// 桌機即使支援 navigator.share 也一律直接下載，避免跳出分享面板而不是存檔
+function isTouchDevice() {
+  if (typeof window === "undefined") return false;
+  return (
+    navigator.maxTouchPoints > 0 &&
+    window.matchMedia("(pointer: coarse)").matches
+  );
+}
+
+// 觸發瀏覽器下載檔案
+function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.rel = "noopener";
+  // 必須掛進 DOM 才能在 Firefox 觸發下載
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  // 延後釋放：立即 revoke 會讓尚未開始的下載靜默失敗
+  setTimeout(() => URL.revokeObjectURL(url), 10_000);
+}
+
 async function exportCanvas(canvas: HTMLCanvasElement) {
   const blob = await new Promise<Blob | null>((resolve) =>
     canvas.toBlob(resolve, "image/png")
   );
   if (!blob) return;
 
-  const file = new File([blob], "y2k-snap.png", { type: "image/png" });
+  const file = new File([blob], EXPORT_FILENAME, { type: "image/png" });
 
   // 手機優先用 Web Share API，讓使用者可直接存到相簿
-  if (navigator.canShare?.({ files: [file] })) {
+  if (isTouchDevice() && navigator.canShare?.({ files: [file] })) {
     try {
       await navigator.share({ files: [file], title: "y2k-snap" });
+      return;
     } catch (err) {
-      // AbortError 表示使用者主動取消，不算錯誤
-      if ((err as Error).name !== "AbortError") throw err;
+      // AbortError 表示使用者主動取消，不需再退回下載
+      if ((err as Error).name === "AbortError") return;
+      // 其餘失敗（例如權限被擋）改走一般下載，避免使用者拿不到檔案
     }
-    return;
   }
 
-  // 桌面瀏覽器 fallback：觸發檔案下載
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "y2k-snap.png";
-  a.click();
-  URL.revokeObjectURL(url);
+  downloadBlob(blob, EXPORT_FILENAME);
 }
 
 export function Editor() {
