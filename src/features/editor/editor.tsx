@@ -83,6 +83,7 @@ function downloadBlob(blob: Blob, filename: string) {
   setTimeout(() => URL.revokeObjectURL(url), 10_000);
 }
 
+// 匯出一律保留透明背景：相框的鏤空區域輸出為去背 PNG
 async function exportCanvas(canvas: HTMLCanvasElement) {
   const blob = await new Promise<Blob | null>((resolve) =>
     canvas.toBlob(resolve, "image/png")
@@ -144,10 +145,6 @@ export function Editor() {
         const frameImg = await loadImage(frame.src);
         canvas.width = frameImg.naturalWidth;
         canvas.height = frameImg.naturalHeight;
-
-        // 白色底，避免分享到 Instagram 限時動態時透明區域顯示為黑色
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         const rect = {
           x: (frame.screen.x / 100) * canvas.width,
