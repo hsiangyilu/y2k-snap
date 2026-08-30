@@ -1,16 +1,62 @@
 "use client";
 
-import type { Sticker } from "./types";
+import type { Sticker, StickerTone } from "./types";
 
 type Props = {
   stickers: Sticker[];
   activeId: string;
+  tone: StickerTone;
   onSelect: (stickerId: string) => void;
+  onToneChange: (tone: StickerTone) => void;
 };
 
-export function StickerPanel({ stickers, activeId, onSelect }: Props) {
+const TONE_OPTIONS: { id: StickerTone; label: string }[] = [
+  { id: "bw", label: "B&W" },
+  { id: "color", label: "COLOR" },
+];
+
+export function StickerPanel({
+  stickers,
+  activeId,
+  tone,
+  onSelect,
+  onToneChange,
+}: Props) {
+  // 沒選貼紙時色調不影響畫面，不顯示切換避免誤導
+  const hasSticker = activeId !== "none";
+
   return (
     <section aria-label="Sticker selection">
+      {hasSticker && (
+        <div className="mb-3 flex items-center gap-2">
+          <span className="font-display text-xs tracking-wider text-content-secondary">
+            PHOTO
+          </span>
+          <div
+            className="flex gap-1 rounded-full border border-border p-1"
+            aria-label="Photo tone"
+          >
+            {TONE_OPTIONS.map((option) => {
+              const isActive = option.id === tone;
+              return (
+                <button
+                  key={option.id}
+                  onClick={() => onToneChange(option.id)}
+                  aria-pressed={isActive}
+                  aria-label={`Photo tone ${option.label}`}
+                  className={`h-8 rounded-full px-4 font-display text-xs tracking-wider transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+                    isActive
+                      ? "bg-brand text-content-on-brand"
+                      : "text-content-secondary hover:text-content-primary"
+                  }`}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-rows-2 grid-flow-col auto-cols-[calc((100vw-60px)/4.5)] gap-2 overflow-x-auto pb-1 lg:grid-rows-none lg:grid-cols-2 lg:grid-flow-row lg:auto-cols-auto lg:overflow-x-visible lg:pb-0">
         {stickers.map((sticker) => {

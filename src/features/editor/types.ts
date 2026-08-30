@@ -33,6 +33,9 @@ export type Sticker = {
 export const STICKER_BW_CSS =
   "grayscale(1) sepia(0.2) contrast(0.82) brightness(0.97)";
 
+// 貼紙模式的照片色調：bw 套用上方底片色調，color 保留使用者選的濾鏡
+export type StickerTone = "bw" | "color";
+
 export const Y2K_STICKERS: Sticker[] = [
   { id: "none",      label: "NONE",    src: null },
   { id: "sticker-1", label: "STARS",   src: "/stickers/sticker-1.png" },

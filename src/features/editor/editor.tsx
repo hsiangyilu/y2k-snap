@@ -7,6 +7,7 @@ import { FilterPanel } from "./filter-panel";
 import { FramePanel } from "./frame-panel";
 import { StickerPanel } from "./sticker-panel";
 import { Y2K_FILTERS, Y2K_FRAMES, Y2K_STICKERS, STICKER_BW_CSS } from "./types";
+import type { StickerTone } from "./types";
 import { fileToImageUrl, isSupportedImage } from "@/lib/image-file";
 import { applyPixelFilters } from "@/lib/canvas-filter";
 
@@ -113,6 +114,8 @@ export function Editor() {
   const [activeFilter, setActiveFilter] = useState("original");
   const [activeFrame, setActiveFrame] = useState("none");
   const [activeSticker, setActiveSticker] = useState("none");
+  // 貼紙模式的照片色調：預設黑白，讓彩色貼紙更突出
+  const [stickerTone, setStickerTone] = useState<StickerTone>("bw");
   // 下載合成需載入邊框/貼紙原圖（最大 1.5MB），期間鎖定按鈕避免連點
   const [isDownloading, setIsDownloading] = useState(false);
   // 照片原始尺寸：無邊框預覽時用來定出貼紙圖層的覆蓋範圍
@@ -126,8 +129,10 @@ export function Editor() {
   const frame = Y2K_FRAMES.find((f) => f.id === activeFrame) ?? Y2K_FRAMES[0];
   const sticker =
     Y2K_STICKERS.find((s) => s.id === activeSticker) ?? Y2K_STICKERS[0];
-  // 貼紙模式：照片轉黑白底片色調，蓋過原本選的濾鏡
-  const effectiveFilterCss = sticker.src ? STICKER_BW_CSS : activeFilterCss;
+  // 貼紙模式選 B&W 時照片轉黑白底片色調，蓋過原本選的濾鏡；
+  // 選 COLOR 則保留使用者在濾鏡分頁選的效果
+  const effectiveFilterCss =
+    sticker.src && stickerTone === "bw" ? STICKER_BW_CSS : activeFilterCss;
 
   const handleDownload = useCallback(async () => {
     const img = imgRef.current;
@@ -204,6 +209,7 @@ export function Editor() {
       setActiveFilter("original");
       setActiveFrame("none");
       setActiveSticker("none");
+      setStickerTone("bw");
       setPhotoSize(null);
     } catch {
       // 轉檔失敗則保留原本照片，不中斷使用者
@@ -330,7 +336,9 @@ export function Editor() {
               <StickerPanel
                 stickers={Y2K_STICKERS}
                 activeId={activeSticker}
+                tone={stickerTone}
                 onSelect={setActiveSticker}
+                onToneChange={setStickerTone}
               />
             )}
             </div>
