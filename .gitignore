@@ -26,6 +26,7 @@
 *.png
 !public/frames/*.png
 !public/stickers/*.png
+!src/app/apple-icon.png
 
 # debug
 npm-debug.log*
