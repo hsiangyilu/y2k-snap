@@ -10,6 +10,8 @@ import { Y2K_FILTERS, Y2K_FRAMES, Y2K_STICKERS, STICKER_BW_CSS } from "./types";
 import type { StickerTone } from "./types";
 import { fileToImageUrl, isSupportedImage } from "@/lib/image-file";
 import { applyPixelFilters } from "@/lib/canvas-filter";
+import { applyStickerTransform, isTransformed, toCssTransform } from "./sticker-transform";
+import { useStickerTransform } from "./use-sticker-transform";
 
 type Tab = "frame" | "filter" | "sticker";
 
@@ -129,6 +131,15 @@ export function Editor() {
   const frame = Y2K_FRAMES.find((f) => f.id === activeFrame) ?? Y2K_FRAMES[0];
   const sticker =
     Y2K_STICKERS.find((s) => s.id === activeSticker) ?? Y2K_STICKERS[0];
+  // 選了貼紙才啟用圖層的平移縮放手勢，否則預覽維持「點擊更換照片」
+  const stickerGesture = useStickerTransform(Boolean(sticker.src));
+
+  // 換一款貼紙等於換一張圖樣，沿用上一張的位移縮放沒有意義，故重設
+  const handleSelectSticker = useCallback((stickerId: string) => {
+    setActiveSticker(stickerId);
+    stickerGesture.reset();
+  }, [stickerGesture]);
+
   // 貼紙模式選 B&W 時照片轉黑白底片色調，蓋過原本選的濾鏡；
   // 選 COLOR 則保留使用者在濾鏡分頁選的效果
   const effectiveFilterCss =
@@ -171,7 +182,11 @@ export function Editor() {
         ctx.beginPath();
         ctx.rect(rect.x, rect.y, rect.width, rect.height);
         ctx.clip();
-        if (stickerImg) drawCover(ctx, stickerImg, rect);
+        if (stickerImg) {
+          // 與預覽套用同一組變形，確保所見即所得
+          applyStickerTransform(ctx, rect, stickerGesture.transform);
+          drawCover(ctx, stickerImg, rect);
+        }
         ctx.restore();
 
         ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
@@ -184,9 +199,14 @@ export function Editor() {
       ctx.drawImage(img, 0, 0);
       applyPixelFilters(ctx, 0, 0, canvas.width, canvas.height, effectiveFilterCss);
       if (stickerImg) {
-        drawCover(ctx, stickerImg, {
-          x: 0, y: 0, width: canvas.width, height: canvas.height,
-        });
+        const full = { x: 0, y: 0, width: canvas.width, height: canvas.height };
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(full.x, full.y, full.width, full.height);
+        ctx.clip();
+        applyStickerTransform(ctx, full, stickerGesture.transform);
+        drawCover(ctx, stickerImg, full);
+        ctx.restore();
       }
       await exportCanvas(canvas);
     } catch (err) {
@@ -197,7 +217,7 @@ export function Editor() {
     } finally {
       setIsDownloading(false);
     }
-  }, [photoUrl, effectiveFilterCss, frame, sticker, isDownloading]);
+  }, [photoUrl, effectiveFilterCss, frame, sticker, isDownloading, stickerGesture.transform]);
 
   // 點照片區塊觸發更換（支援 HEIC，轉檔為非同步）
   const handleChangePhoto = useCallback(async (file: File) => {
@@ -210,11 +230,31 @@ export function Editor() {
       setActiveFrame("none");
       setActiveSticker("none");
       setStickerTone("bw");
+      stickerGesture.reset();
       setPhotoSize(null);
     } catch {
       // 轉檔失敗則保留原本照片，不中斷使用者
     }
-  }, [photoUrl]);
+  }, [photoUrl, stickerGesture]);
+
+  // 拖曳/縮放過就不觸發更換照片，避免調整貼紙時誤開檔案選擇器
+  const handlePreviewClick = () => {
+    if (stickerGesture.consumeDragged()) return;
+    changeInputRef.current?.click();
+  };
+
+  // 啟用手勢時停用瀏覽器預設的觸控平移縮放，否則手機上會變成捲頁
+  const previewGestureClass = stickerGesture.isEnabled
+    ? "touch-none cursor-grab active:cursor-grabbing"
+    : "cursor-pointer";
+
+  const previewA11y = stickerGesture.isEnabled
+    ? {
+        title: "Drag to move the sticker layer, pinch or scroll to zoom",
+        "aria-label":
+          "Photo preview. Drag to move the sticker layer, pinch or scroll to zoom, arrow keys to nudge, plus and minus to zoom. Tap to change photo.",
+      }
+    : { title: "Tap to change photo", "aria-label": "Tap to change photo" };
 
   const changePhotoInput = (
     <input
@@ -253,6 +293,7 @@ export function Editor() {
       alt=""
       aria-hidden="true"
       className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
+      style={{ transform: toCssTransform(stickerGesture.transform) }}
     />
   ) : null;
 
@@ -337,8 +378,10 @@ export function Editor() {
                 stickers={Y2K_STICKERS}
                 activeId={activeSticker}
                 tone={stickerTone}
-                onSelect={setActiveSticker}
+                transformed={isTransformed(stickerGesture.transform)}
+                onSelect={handleSelectSticker}
                 onToneChange={setStickerTone}
+                onResetTransform={stickerGesture.reset}
               />
             )}
             </div>
@@ -354,16 +397,16 @@ export function Editor() {
                 /* 有邊框：照片裁切置入相框螢幕區域，相框圖片疊在最上層 */
                 <button
                   type="button"
-                  onClick={() => changeInputRef.current?.click()}
-                  className="relative max-w-full max-h-full shadow-xl rounded-2xl overflow-hidden cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  onClick={handlePreviewClick}
+                  {...stickerGesture.bind}
+                  {...previewA11y}
+                  className={`relative max-w-full max-h-full shadow-xl rounded-2xl overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${previewGestureClass}`}
                   style={{
                     aspectRatio: `${frame.size.width} / ${frame.size.height}`,
                     // 填滿可用區域並保持比例：寬度同時受限於容器寬(100cqw)與
                     // 由容器高換算的寬(100cqh × 比例)，再以原始尺寸為上限避免放大模糊
                     width: `min(${frame.size.width}px, 100cqw, calc(100cqh * ${frame.size.width} / ${frame.size.height}))`,
                   }}
-                  title="Tap to change photo"
-                  aria-label="Tap to change photo — frame preview active"
                 >
                   <div
                     className="absolute overflow-hidden"
@@ -388,8 +431,10 @@ export function Editor() {
                 /* 無邊框：照片填滿可用區域並保持比例，貼紙圖層直接疊在照片上 */
                 <button
                   type="button"
-                  onClick={() => changeInputRef.current?.click()}
-                  className="relative shadow-xl rounded-2xl overflow-hidden cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  onClick={handlePreviewClick}
+                  {...stickerGesture.bind}
+                  {...previewA11y}
+                  className={`relative shadow-xl rounded-2xl overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${previewGestureClass}`}
                   style={
                     photoSize
                       ? {
@@ -398,8 +443,6 @@ export function Editor() {
                         }
                       : undefined
                   }
-                  title="Tap to change photo"
-                  aria-label="Tap to change photo"
                 >
                   {framedPhotoImg}
                   {stickerOverlay}
