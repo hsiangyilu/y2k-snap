@@ -45,6 +45,16 @@ export const Y2K_STICKERS: Sticker[] = [
   { id: "sticker-6", label: "CRYSTAL", src: "/stickers/sticker-6.png" },
   { id: "sticker-7", label: "MOON",    src: "/stickers/sticker-7.png" },
   { id: "sticker-8", label: "BLUEBERRY", src: "/stickers/sticker-8.png" },
+  { id: "sticker-09", label: "BORDER",   src: "/stickers/sticker-09.png" },
+  { id: "sticker-10", label: "PEARL",    src: "/stickers/sticker-10.png" },
+  { id: "sticker-11", label: "TWINKLE",  src: "/stickers/sticker-11.png" },
+  { id: "sticker-12", label: "CONFETTI", src: "/stickers/sticker-12.png" },
+  { id: "sticker-13", label: "TREASURE", src: "/stickers/sticker-13.png" },
+  { id: "sticker-14", label: "PARTY",    src: "/stickers/sticker-14.png" },
+  { id: "sticker-15", label: "PUFFY",    src: "/stickers/sticker-15.png" },
+  { id: "sticker-16", label: "ORCHID",   src: "/stickers/sticker-16.png" },
+  { id: "sticker-17", label: "SUBTLE",   src: "/stickers/sticker-17.png" },
+  { id: "sticker-18", label: "BLOSSOM",  src: "/stickers/sticker-18.png" },
 ];
 
 // 濾鏡強度整體降低 20%：每個數值往無效果基準拉近 20%
