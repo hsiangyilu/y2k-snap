@@ -26,7 +26,8 @@ export type Frame = {
 export type Sticker = {
   id: string;
   label: string;
-  src: string | null; // null 代表「無貼紙」
+  src: string | null;   // null 代表「無貼紙」；套用與下載用的原圖
+  thumb: string | null; // 面板縮圖（240px WebP），避免用原圖當縮圖拖垮載入
 };
 
 // 貼紙模式下照片的黑白底片色調：低對比的灰平褪色復古感，讓彩色貼紙更突出
@@ -37,14 +38,25 @@ export const STICKER_BW_CSS =
 export type StickerTone = "bw" | "color";
 
 export const Y2K_STICKERS: Sticker[] = [
-  { id: "none",      label: "NONE",    src: null },
-  { id: "sticker-1", label: "STARS",   src: "/stickers/sticker-1.png" },
-  { id: "sticker-2", label: "GEMS",    src: "/stickers/sticker-2.png" },
-  { id: "sticker-3", label: "FLOWER",  src: "/stickers/sticker-3.png" },
-  { id: "sticker-4", label: "HEARTS",  src: "/stickers/sticker-4.png" },
-  { id: "sticker-6", label: "CRYSTAL", src: "/stickers/sticker-6.png" },
-  { id: "sticker-7", label: "MOON",    src: "/stickers/sticker-7.png" },
-  { id: "sticker-8", label: "BLUEBERRY", src: "/stickers/sticker-8.png" },
+  { id: "none", label: "NONE", src: null, thumb: null },
+  { id: "sticker-1", label: "STARS", src: "/stickers/sticker-1.png", thumb: "/stickers/thumbs/sticker-1.webp" },
+  { id: "sticker-2", label: "GEMS", src: "/stickers/sticker-2.png", thumb: "/stickers/thumbs/sticker-2.webp" },
+  { id: "sticker-3", label: "FLOWER", src: "/stickers/sticker-3.png", thumb: "/stickers/thumbs/sticker-3.webp" },
+  { id: "sticker-4", label: "HEARTS", src: "/stickers/sticker-4.png", thumb: "/stickers/thumbs/sticker-4.webp" },
+  { id: "sticker-5", label: "COCOA", src: "/stickers/sticker-5.png", thumb: "/stickers/thumbs/sticker-5.webp" },
+  { id: "sticker-6", label: "CRYSTAL", src: "/stickers/sticker-6.png", thumb: "/stickers/thumbs/sticker-6.webp" },
+  { id: "sticker-7", label: "MOON", src: "/stickers/sticker-7.png", thumb: "/stickers/thumbs/sticker-7.webp" },
+  { id: "sticker-8", label: "BLUEBERRY", src: "/stickers/sticker-8.png", thumb: "/stickers/thumbs/sticker-8.webp" },
+  { id: "sticker-09", label: "BORDER", src: "/stickers/sticker-09.png", thumb: "/stickers/thumbs/sticker-09.webp" },
+  { id: "sticker-10", label: "PEARL", src: "/stickers/sticker-10.png", thumb: "/stickers/thumbs/sticker-10.webp" },
+  { id: "sticker-11", label: "TWINKLE", src: "/stickers/sticker-11.png", thumb: "/stickers/thumbs/sticker-11.webp" },
+  { id: "sticker-12", label: "CONFETTI", src: "/stickers/sticker-12.png", thumb: "/stickers/thumbs/sticker-12.webp" },
+  { id: "sticker-13", label: "TREASURE", src: "/stickers/sticker-13.png", thumb: "/stickers/thumbs/sticker-13.webp" },
+  { id: "sticker-14", label: "PARTY", src: "/stickers/sticker-14.png", thumb: "/stickers/thumbs/sticker-14.webp" },
+  { id: "sticker-15", label: "PUFFY", src: "/stickers/sticker-15.png", thumb: "/stickers/thumbs/sticker-15.webp" },
+  { id: "sticker-16", label: "ORCHID", src: "/stickers/sticker-16.png", thumb: "/stickers/thumbs/sticker-16.webp" },
+  { id: "sticker-17", label: "SUBTLE", src: "/stickers/sticker-17.png", thumb: "/stickers/thumbs/sticker-17.webp" },
+  { id: "sticker-18", label: "BLOSSOM", src: "/stickers/sticker-18.png", thumb: "/stickers/thumbs/sticker-18.webp" },
 ];
 
 // 濾鏡強度整體降低 20%：每個數值往無效果基準拉近 20%

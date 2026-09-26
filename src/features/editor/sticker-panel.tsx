@@ -74,11 +74,13 @@ export function StickerPanel({
               aria-label={sticker.label}
             >
               <div className="aspect-square overflow-hidden flex items-center justify-center bg-bg-base">
-                {sticker.src ? (
+                {sticker.thumb ? (
                   <img
-                    src={sticker.src}
+                    src={sticker.thumb}
                     alt=""
                     aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover"
                   />
                 ) : (
