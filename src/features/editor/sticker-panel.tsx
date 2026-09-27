@@ -8,8 +8,11 @@ type Props = {
   tone: StickerTone;
   /** 圖層是否已被平移或縮放，決定要不要顯示重設 */
   transformed: boolean;
+  /** 是否處於貼紙調整模式（預覽改為平移縮放，不再是更換照片的入口）*/
+  adjusting: boolean;
   onSelect: (stickerId: string) => void;
   onToneChange: (tone: StickerTone) => void;
+  onToggleAdjust: () => void;
   onResetTransform: () => void;
 };
 
@@ -23,8 +26,10 @@ export function StickerPanel({
   activeId,
   tone,
   transformed,
+  adjusting,
   onSelect,
   onToneChange,
+  onToggleAdjust,
   onResetTransform,
 }: Props) {
   // 沒選貼紙時色調不影響畫面，不顯示切換避免誤導
@@ -74,9 +79,25 @@ export function StickerPanel({
       )}
 
       {hasSticker && (
-        <p className="mb-3 font-body text-body-sm text-content-secondary">
-          Drag the photo to move stickers · pinch or scroll to zoom
-        </p>
+        <div className="mb-3 flex items-center gap-2">
+          <button
+            onClick={onToggleAdjust}
+            aria-pressed={adjusting}
+            aria-label="Toggle sticker adjust mode"
+            className={`h-9 rounded-full px-4 font-display text-xs tracking-wider transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+              adjusting
+                ? "bg-brand text-content-on-brand"
+                : "border border-border text-content-secondary hover:border-brand hover:text-content-primary"
+            }`}
+          >
+            {adjusting ? "DONE" : "ADJUST"}
+          </button>
+          <p className="font-body text-body-sm text-content-secondary">
+            {adjusting
+              ? "Drag to move · pinch or scroll to zoom"
+              : "Tap ADJUST to move or resize the stickers"}
+          </p>
+        </div>
       )}
 
       <div className="grid grid-rows-2 grid-flow-col auto-cols-[calc((100vw-60px)/4.5)] gap-2 overflow-x-auto pb-1 lg:grid-rows-none lg:grid-cols-2 lg:grid-flow-row lg:auto-cols-auto lg:overflow-x-visible lg:pb-0">

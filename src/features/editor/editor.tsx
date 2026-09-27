@@ -131,12 +131,17 @@ export function Editor() {
   const frame = Y2K_FRAMES.find((f) => f.id === activeFrame) ?? Y2K_FRAMES[0];
   const sticker =
     Y2K_STICKERS.find((s) => s.id === activeSticker) ?? Y2K_STICKERS[0];
-  // 選了貼紙才啟用圖層的平移縮放手勢，否則預覽維持「點擊更換照片」
-  const stickerGesture = useStickerTransform(Boolean(sticker.src));
+  // 調整模式：開啟時預覽只做貼紙圖層的平移縮放，關閉時只做更換照片。
+  // 兩者分屬不同模式，不靠位移門檻猜測使用者意圖。
+  const [isAdjusting, setIsAdjusting] = useState(false);
+  const canAdjust = Boolean(sticker.src);
+  const adjustActive = canAdjust && isAdjusting;
+  const stickerGesture = useStickerTransform(adjustActive);
 
-  // 換一款貼紙等於換一張圖樣，沿用上一張的位移縮放沒有意義，故重設
+  // 換一款貼紙等於換一張圖樣，沿用上一張的位移縮放沒有意義，故重設並退出調整模式
   const handleSelectSticker = useCallback((stickerId: string) => {
     setActiveSticker(stickerId);
+    setIsAdjusting(false);
     stickerGesture.reset();
   }, [stickerGesture]);
 
@@ -230,6 +235,7 @@ export function Editor() {
       setActiveFrame("none");
       setActiveSticker("none");
       setStickerTone("bw");
+      setIsAdjusting(false);
       stickerGesture.reset();
       setPhotoSize(null);
     } catch {
@@ -237,22 +243,23 @@ export function Editor() {
     }
   }, [photoUrl, stickerGesture]);
 
-  // 拖曳/縮放過就不觸發更換照片，避免調整貼紙時誤開檔案選擇器
+  // 調整模式下預覽不再是「更換照片」的入口，避免調整時誤開檔案選擇器
   const handlePreviewClick = () => {
-    if (stickerGesture.consumeDragged()) return;
+    if (adjustActive) return;
     changeInputRef.current?.click();
   };
 
-  // 啟用手勢時停用瀏覽器預設的觸控平移縮放，否則手機上會變成捲頁
-  const previewGestureClass = stickerGesture.isEnabled
-    ? "touch-none cursor-grab active:cursor-grabbing"
+  // 調整模式停用瀏覽器預設的觸控平移縮放，否則手機上會變成捲頁；
+  // 並以外框標示目前正在調整貼紙
+  const previewGestureClass = adjustActive
+    ? "touch-none cursor-grab active:cursor-grabbing ring-2 ring-brand ring-offset-2 ring-offset-bg-base"
     : "cursor-pointer";
 
-  const previewA11y = stickerGesture.isEnabled
+  const previewA11y = adjustActive
     ? {
-        title: "Drag to move the sticker layer, pinch or scroll to zoom",
+        title: "Adjusting sticker — drag to move, pinch or scroll to zoom",
         "aria-label":
-          "Photo preview. Drag to move the sticker layer, pinch or scroll to zoom, arrow keys to nudge, plus and minus to zoom. Tap to change photo.",
+          "Adjusting sticker layer. Drag to move, pinch or scroll to zoom, arrow keys to nudge, plus and minus to zoom.",
       }
     : { title: "Tap to change photo", "aria-label": "Tap to change photo" };
 
@@ -379,8 +386,10 @@ export function Editor() {
                 activeId={activeSticker}
                 tone={stickerTone}
                 transformed={isTransformed(stickerGesture.transform)}
+                adjusting={isAdjusting}
                 onSelect={handleSelectSticker}
                 onToneChange={setStickerTone}
+                onToggleAdjust={() => setIsAdjusting((v) => !v)}
                 onResetTransform={stickerGesture.reset}
               />
             )}

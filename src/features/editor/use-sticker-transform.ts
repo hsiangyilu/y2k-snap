@@ -3,14 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   STICKER_TRANSFORM_DEFAULT,
-  STICKER_SCALE_MAX,
-  STICKER_SCALE_MIN,
   clampTransform,
   type StickerTransform,
 } from "./sticker-transform";
 
-// 位移超過這個像素數才算拖曳，否則視為點擊（預覽區的點擊是「更換照片」）
-const DRAG_THRESHOLD_PX = 6;
 const KEY_PAN_STEP = 0.02;
 const KEY_ZOOM_STEP = 0.1;
 const WHEEL_ZOOM_SENSITIVITY = 0.0015;
@@ -19,7 +15,9 @@ type Pointer = { x: number; y: number };
 
 /**
  * 貼紙圖層的手勢操作：單指/滑鼠拖曳平移、雙指捏合或滾輪縮放、方向鍵與 +/- 鍵盤操作。
- * enabled 為 false 時完全不攔截事件，預覽區維持原本「點擊更換照片」的行為。
+ *
+ * enabled 由「調整模式」控制，而非只看有沒有選貼紙。調整模式關閉時完全不攔截事件，
+ * 預覽區維持原本「點擊更換照片」的行為 — 兩種操作分屬不同模式，不靠位移門檻猜測意圖。
  */
 export function useStickerTransform(enabled: boolean) {
   const [transform, setTransform] = useState<StickerTransform>(STICKER_TRANSFORM_DEFAULT);
@@ -27,18 +25,8 @@ export function useStickerTransform(enabled: boolean) {
   const pointersRef = useRef(new Map<number, Pointer>());
   // 捏合起點：初始雙指距離與當下縮放值
   const pinchRef = useRef<{ distance: number; scale: number } | null>(null);
-  // 本次互動是否已達拖曳門檻，用來讓 click 知道該不該觸發更換照片
-  const draggedRef = useRef(false);
-  const movedPxRef = useRef(0);
 
   const reset = useCallback(() => setTransform(STICKER_TRANSFORM_DEFAULT), []);
-
-  /** 讀取本次互動是否為拖曳，並清除旗標（click 處理器呼叫） */
-  const consumeDragged = useCallback(() => {
-    const was = draggedRef.current;
-    draggedRef.current = false;
-    return was;
-  }, []);
 
   const nudge = useCallback((dx: number, dy: number, dScale: number) => {
     setTransform((t) =>
@@ -49,15 +37,9 @@ export function useStickerTransform(enabled: boolean) {
   const onPointerDown = useCallback((e: React.PointerEvent<HTMLButtonElement>) => {
     if (!enabled) return;
     pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    if (pointersRef.current.size === 1) {
-      movedPxRef.current = 0;
-      draggedRef.current = false;
-    }
     if (pointersRef.current.size === 2) {
       const [a, b] = [...pointersRef.current.values()];
       pinchRef.current = { distance: Math.hypot(a.x - b.x, a.y - b.y), scale: transform.scale };
-      // 進入捏合就不再視為點擊
-      draggedRef.current = true;
     }
     e.currentTarget.setPointerCapture?.(e.pointerId);
   }, [enabled, transform.scale]);
@@ -85,10 +67,6 @@ export function useStickerTransform(enabled: boolean) {
 
     const dx = next.x - prev.x;
     const dy = next.y - prev.y;
-    movedPxRef.current += Math.hypot(dx, dy);
-    if (movedPxRef.current > DRAG_THRESHOLD_PX) draggedRef.current = true;
-    if (!draggedRef.current) return;
-
     setTransform((t) => clampTransform({ ...t, x: t.x + dx / box.width, y: t.y + dy / box.height }));
   }, [enabled]);
 
@@ -111,8 +89,6 @@ export function useStickerTransform(enabled: boolean) {
     const step = map[e.key];
     if (!step) return;
     e.preventDefault();
-    // 鍵盤操作也算互動，避免放開按鍵後誤觸更換照片
-    draggedRef.current = true;
     nudge(...step);
   }, [enabled, nudge]);
 
@@ -130,12 +106,16 @@ export function useStickerTransform(enabled: boolean) {
     return () => el.removeEventListener("wheel", handler);
   }, [enabled]);
 
+  // 離開調整模式時清掉殘留的指標狀態，避免下次進入時誤判為延續手勢
+  useEffect(() => {
+    if (enabled) return;
+    pointersRef.current.clear();
+    pinchRef.current = null;
+  }, [enabled]);
+
   return {
     transform,
     reset,
-    consumeDragged,
-    isEnabled: enabled,
-    scaleRange: { min: STICKER_SCALE_MIN, max: STICKER_SCALE_MAX },
     bind: {
       ref: elementRef,
       onPointerDown,
