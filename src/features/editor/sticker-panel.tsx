@@ -6,8 +6,14 @@ type Props = {
   stickers: Sticker[];
   activeId: string;
   tone: StickerTone;
+  /** 圖層是否已被平移或縮放，決定要不要顯示重設 */
+  transformed: boolean;
+  /** 是否處於貼紙調整模式（預覽改為平移縮放，不再是更換照片的入口）*/
+  adjusting: boolean;
   onSelect: (stickerId: string) => void;
   onToneChange: (tone: StickerTone) => void;
+  onToggleAdjust: () => void;
+  onResetTransform: () => void;
 };
 
 const TONE_OPTIONS: { id: StickerTone; label: string }[] = [
@@ -19,8 +25,12 @@ export function StickerPanel({
   stickers,
   activeId,
   tone,
+  transformed,
+  adjusting,
   onSelect,
   onToneChange,
+  onToggleAdjust,
+  onResetTransform,
 }: Props) {
   // 沒選貼紙時色調不影響畫面，不顯示切換避免誤導
   const hasSticker = activeId !== "none";
@@ -55,6 +65,38 @@ export function StickerPanel({
               );
             })}
           </div>
+
+          {transformed && (
+            <button
+              onClick={onResetTransform}
+              aria-label="Reset sticker position and zoom"
+              className="ml-auto h-8 rounded-full border border-border px-3 font-display text-xs tracking-wider text-content-secondary transition-colors hover:border-brand hover:text-content-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
+              RESET
+            </button>
+          )}
+        </div>
+      )}
+
+      {hasSticker && (
+        <div className="mb-3 flex items-center gap-2">
+          <button
+            onClick={onToggleAdjust}
+            aria-pressed={adjusting}
+            aria-label="Toggle sticker adjust mode"
+            className={`h-9 rounded-full px-4 font-display text-xs tracking-wider transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+              adjusting
+                ? "bg-brand text-content-on-brand"
+                : "border border-border text-content-secondary hover:border-brand hover:text-content-primary"
+            }`}
+          >
+            {adjusting ? "DONE" : "ADJUST"}
+          </button>
+          <p className="font-body text-body-sm text-content-secondary">
+            {adjusting
+              ? "Drag inside the frame to move · drag a corner to resize"
+              : "Tap ADJUST to move or resize the stickers"}
+          </p>
         </div>
       )}
 
