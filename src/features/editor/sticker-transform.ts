@@ -12,15 +12,13 @@ export type StickerTransform = {
 
 export const STICKER_TRANSFORM_DEFAULT: StickerTransform = { x: 0, y: 0, scale: 1 };
 
-// 下限設為 1：圖層以 cover 鋪滿顯示區，縮小到 1 以下邊緣會露出空隙
-export const STICKER_SCALE_MIN = 1;
-export const STICKER_SCALE_MAX = 3;
+// 有了可見的變形框之後，縮小是合理操作（貼紙群變小、可放到角落），
+// 因此下限放寬到 0.3；不再是「必須鋪滿」的圖層
+export const STICKER_SCALE_MIN = 0.3;
+export const STICKER_SCALE_MAX = 2.5;
 
-// 1 倍時仍可移動的範圍。圖層以 cover 鋪滿，長寬比通常與顯示區不同，
-// 至少有一軸有溢出的餘裕可移動；移到另一軸的極限時邊緣會露出空隙，
-// 屬於使用者可見且可回復（往回拖或按 RESET）的結果，因此不封鎖手勢。
-const BASE_PAN_LIMIT = 0.2;
-// 放大後額外增加的可移動範圍：放大越多，露出邊緣的風險越低
+// 位移上限：以顯示區尺寸為單位。放大後給更多餘裕，避免框被卡在中央附近
+const BASE_PAN_LIMIT = 0.5;
 const PAN_LIMIT_PER_SCALE = 0.5;
 
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
@@ -28,7 +26,22 @@ const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(mi
 /** 依目前縮放算出位移可達的範圍 */
 export function panLimit(scale: number) {
   const s = clamp(scale, STICKER_SCALE_MIN, STICKER_SCALE_MAX);
-  return BASE_PAN_LIMIT + ((s - 1) / 2) * PAN_LIMIT_PER_SCALE;
+  return BASE_PAN_LIMIT + Math.max(0, s - 1) * PAN_LIMIT_PER_SCALE;
+}
+
+/**
+ * 變形框在顯示區內的位置，單位為百分比。
+ * 貼紙圖層以 inset-0 填滿顯示區再套 transform，因此框即是「顯示區 × scale」
+ * 以中心為原點縮放後再位移的結果。
+ */
+export function boxRect(t: StickerTransform) {
+  const size = t.scale * 100;
+  return {
+    left: (100 - size) / 2 + t.x * 100,
+    top: (100 - size) / 2 + t.y * 100,
+    width: size,
+    height: size,
+  };
 }
 
 export function clampTransform(t: StickerTransform): StickerTransform {

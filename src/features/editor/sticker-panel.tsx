@@ -94,7 +94,7 @@ export function StickerPanel({
           </button>
           <p className="font-body text-body-sm text-content-secondary">
             {adjusting
-              ? "Drag to move · pinch or scroll to zoom"
+              ? "Drag inside the frame to move · drag a corner to resize"
               : "Tap ADJUST to move or resize the stickers"}
           </p>
         </div>
