@@ -29,11 +29,13 @@ export function FramePanel({ frames, activeId, onSelect }: Props) {
               aria-label={frame.label}
             >
               <div className="aspect-square overflow-hidden flex items-center justify-center bg-bg-base">
-                {frame.src ? (
+                {frame.thumb ? (
                   <img
-                    src={frame.src}
+                    src={frame.thumb}
                     alt=""
                     aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-contain p-2"
                   />
                 ) : (
