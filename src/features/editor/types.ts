@@ -15,7 +15,8 @@ export type FrameScreenRect = {
 export type Frame = {
   id: string;
   label: string;
-  src: string | null; // null 代表「無邊框」
+  src: string | null;   // null 代表「無邊框」；套用與下載用的原圖
+  thumb: string | null; // 面板縮圖（240px WebP），避免用原圖當縮圖拖垮載入
   screen: FrameScreenRect;
   // 邊框圖片原始尺寸，用於維持預覽的長寬比例
   size: { width: number; height: number };
@@ -78,14 +79,23 @@ export const Y2K_FILTERS: Filter[] = [
 ];
 
 // 相機邊框樣式：screen 為照片要嵌入的區域（百分比座標，依各邊框圖片的鏤空範圍量測）
-// 之後新增邊框圖片時，將檔案放到 public/frames/ 並依圖片量測 screen 座標
+// 相機邊框樣式：screen 為照片要嵌入的區域（百分比座標，依各邊框圖片的鏤空範圍量測）
+// 新增邊框時：將檔案放到 public/frames/、產一份 thumbs/ 縮圖，screen 由鏤空區域量測
 export const Y2K_FRAMES: Frame[] = [
-  { id: "none", label: "NONE", src: null, screen: { x: 0, y: 0, width: 100, height: 100 }, size: { width: 1, height: 1 } },
-  { id: "frame-1", label: "NIKON",  src: "/frames/1.png", screen: { x: 15.67, y: 26.39, width: 46.67, height: 49.07 }, size: { width: 2400, height: 1728 } },
-  { id: "frame-2", label: "STAR",   src: "/frames/2.png", screen: { x: 14.00, y: 38.43, width: 39.00, height: 40.74 }, size: { width: 2400, height: 1728 } },
-  { id: "frame-3", label: "RIBBON", src: "/frames/3.png", screen: { x: 18.54, y: 28.95, width: 42.25, height: 57.60 }, size: { width: 2400, height: 2342 } },
-  { id: "frame-4", label: "TICKET", src: "/frames/4.png", screen: { x: 7.42,  y: 31.65, width: 46.92, height: 49.56 }, size: { width: 2400, height: 1703 } },
-  { id: "frame-5", label: "LUCKY",  src: "/frames/5.png", screen: { x: 10.67, y: 29.51, width: 44.33, height: 49.60 }, size: { width: 2400, height: 1613 } },
-  { id: "frame-6", label: "CHERRY", src: "/frames/6.png", screen: { x: 20.21, y: 37.03, width: 46.12, height: 44.01 }, size: { width: 2400, height: 1904 } },
-  { id: "frame-7", label: "SANRIO", src: "/frames/7.png", screen: { x: 21.00, y: 30.40, width: 38.54, height: 48.26 }, size: { width: 2400, height: 1434 } },
+  { id: "none", label: "NONE", src: null, thumb: null, screen: { x: 0, y: 0, width: 100, height: 100 }, size: { width: 1, height: 1 } },
+  { id: "frame-1", label: "NIKON", src: "/frames/1.png", thumb: "/frames/thumbs/1.webp", screen: { x: 15.67, y: 26.39, width: 46.67, height: 49.07 }, size: { width: 2400, height: 1728 } },
+  { id: "frame-2", label: "STAR", src: "/frames/2.png", thumb: "/frames/thumbs/2.webp", screen: { x: 14.0, y: 38.43, width: 39.0, height: 40.74 }, size: { width: 2400, height: 1728 } },
+  { id: "frame-3", label: "RIBBON", src: "/frames/3.png", thumb: "/frames/thumbs/3.webp", screen: { x: 18.54, y: 28.95, width: 42.25, height: 57.6 }, size: { width: 2400, height: 2342 } },
+  { id: "frame-4", label: "TICKET", src: "/frames/4.png", thumb: "/frames/thumbs/4.webp", screen: { x: 7.42, y: 31.65, width: 46.92, height: 49.56 }, size: { width: 2400, height: 1703 } },
+  { id: "frame-5", label: "LUCKY", src: "/frames/5.png", thumb: "/frames/thumbs/5.webp", screen: { x: 10.67, y: 29.51, width: 44.33, height: 49.6 }, size: { width: 2400, height: 1613 } },
+  { id: "frame-6", label: "CHERRY", src: "/frames/6.png", thumb: "/frames/thumbs/6.webp", screen: { x: 20.21, y: 37.03, width: 46.12, height: 44.01 }, size: { width: 2400, height: 1904 } },
+  { id: "frame-7", label: "SANRIO", src: "/frames/7.png", thumb: "/frames/thumbs/7.webp", screen: { x: 21.0, y: 30.4, width: 38.54, height: 48.26 }, size: { width: 2400, height: 1434 } },
+  { id: "frame-9", label: "SPARKLE", src: "/frames/9.png", thumb: "/frames/thumbs/9.webp", screen: { x: 14.5, y: 22.13, width: 53.08, height: 71.76 }, size: { width: 2400, height: 1374 } },
+  { id: "frame-10", label: "SONY", src: "/frames/10.png", thumb: "/frames/thumbs/10.webp", screen: { x: 8.83, y: 22.79, width: 56.92, height: 65.81 }, size: { width: 2400, height: 1562 } },
+  { id: "frame-11", label: "CANON", src: "/frames/11.png", thumb: "/frames/thumbs/11.webp", screen: { x: 6.33, y: 31.66, width: 47.75, height: 54.07 }, size: { width: 2400, height: 1598 } },
+  { id: "frame-12", label: "LOVE", src: "/frames/12.png", thumb: "/frames/thumbs/12.webp", screen: { x: 4.08, y: 31.58, width: 51.92, height: 50.99 }, size: { width: 2000, height: 1520 } },
+  { id: "frame-13", label: "WAND", src: "/frames/13.png", thumb: "/frames/thumbs/13.webp", screen: { x: 7.67, y: 21.15, width: 56.75, height: 68.54 }, size: { width: 2400, height: 1494 } },
+  { id: "frame-14", label: "PLAIN", src: "/frames/14.png", thumb: "/frames/thumbs/14.webp", screen: { x: 6.58, y: 15.49, width: 57.67, height: 72.34 }, size: { width: 2400, height: 1562 } },
+  { id: "frame-15", label: "PHONE", src: "/frames/15.png", thumb: "/frames/thumbs/15.webp", screen: { x: 15.0, y: 13.53, width: 69.17, height: 48.5 }, size: { width: 2400, height: 4255 } },
+  { id: "frame-16", label: "CHARM", src: "/frames/16.png", thumb: "/frames/thumbs/16.webp", screen: { x: 15.58, y: 23.96, width: 49.83, height: 66.42 }, size: { width: 2400, height: 1351 } },
 ];
