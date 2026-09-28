@@ -62,6 +62,11 @@ function drawCover(
 
 const EXPORT_FILENAME = "y2k-snap.png";
 
+// 相框預覽的最大寬度。相框素材的實際銳利度不一（部分是放大過的圖），
+// 撐滿預覽區時每個素材像素幾乎只對應一個顯示像素，柔邊會被完全攤開；
+// 設上限讓素材保有餘裕。手機寬度本就低於此值，不受影響。
+const FRAME_PREVIEW_MAX_WIDTH = 760;
+
 // 只有觸控裝置（手機/平板）才走 Web Share 存相簿；
 // 桌機即使支援 navigator.share 也一律直接下載，避免跳出分享面板而不是存檔
 function isTouchDevice() {
@@ -417,8 +422,8 @@ export function Editor() {
                   style={{
                     aspectRatio: `${frame.size.width} / ${frame.size.height}`,
                     // 填滿可用區域並保持比例：寬度同時受限於容器寬(100cqw)與
-                    // 由容器高換算的寬(100cqh × 比例)，再以原始尺寸為上限避免放大模糊
-                    width: `min(${frame.size.width}px, 100cqw, calc(100cqh * ${frame.size.width} / ${frame.size.height}))`,
+                    // 由容器高換算的寬(100cqh × 比例)，再以原始尺寸與預覽上限為界
+                    width: `min(${frame.size.width}px, ${FRAME_PREVIEW_MAX_WIDTH}px, 100cqw, calc(100cqh * ${frame.size.width} / ${frame.size.height}))`,
                   }}
                 >
                 <button
